@@ -8,8 +8,7 @@
 ![Language](https://img.shields.io/badge/ArkTS-stageMode-2B5876?style=flat-square)
 ![Bluetooth](https://img.shields.io/badge/BLE-GATT%20Direct-7A1F2B?style=flat-square)
 
-<!-- TODO: Hero GIF — demo of opening the app → auto-connecting to M-Pencil → showing battery percentage, path docs/images/hero.gif -->
-![Hero](docs/images/hero.gif)
+![M-Pencil Battery Guardian — home screen with live battery and charge state](docs/images/hero.jpg)
 
 ---
 
@@ -25,8 +24,9 @@ Huawei's official battery API for the M-Pencil is wrapped inside a system-level 
 | Threshold reminder + periodic re-reminder | Fires immediately when the configured percentage is reached; optionally re-fires every N minutes until the pen is detached |
 | 30-day battery history | Battery samples are persisted locally and viewable across 24h / 7d / 30d windows |
 
-<!-- TODO: Three side-by-side screenshots, path docs/images/features.png — 1) home page real-time battery ring 2) threshold settings 3) history chart -->
-![Features](docs/images/features.png)
+| Live battery monitor | Threshold alert | Flexible settings |
+|:---:|:---:|:---:|
+| ![Live battery monitor](docs/images/monitor.jpg) | ![Threshold alert](docs/images/alert.jpg) | ![Flexible settings](docs/images/settings.jpg) |
 
 ## Architecture
 
@@ -115,8 +115,7 @@ A HarmonyOS app has to run on both phones and tablets — the same ArkUI code ha
 - **Capped content width + adaptive gutters**: On a landscape tablet the page does not stretch to a 1600px slab — it's clamped to between 960 and 1320px and the remaining space is split evenly via `getSidePadding()`. See [`pages/HomePage.ets:21-24`](entry/src/main/ets/pages/HomePage.ets#L21-L24) and [`pages/SettingsPage.ets:27-30`](entry/src/main/ets/pages/SettingsPage.ets#L27-L30). `Index.ets` reads the screen's physical pixels in `aboutToAppear` via `display.getDefaultDisplaySync()` and converts to logical width using the DPI ([`pages/Index.ets:809-819`](entry/src/main/ets/pages/Index.ets#L809-L819)).
 - **State flattened into AppStorage**: Every field the UI needs to render (battery percentage copy, Hero status text, whether retry is enabled, …) is computed and written into `AppStorage` from one place — `syncAppViewState` in [`models/AppViewStorage.ets:62-85`](entry/src/main/ets/models/AppViewStorage.ets#L62-L85). UI components such as [`components/MainHeroCard.ets:6-13`](entry/src/main/ets/components/MainHeroCard.ets#L6-L13) only subscribe one-way through `@StorageLink` and **hold zero Bluetooth or battery state of their own**. That way the component tree doesn't re-render off a whole state-machine update — it only re-renders the specific keys it subscribed to.
 
-<!-- TODO: Portrait vs. landscape comparison screenshot, path docs/images/responsive.png — portrait on the left, landscape on the right -->
-![Responsive](docs/images/responsive.png)
+![Tablet landscape layout — content clamped and centered with adaptive padding](docs/images/landscape.jpg)
 
 ---
 

@@ -8,8 +8,7 @@
 ![Language](https://img.shields.io/badge/ArkTS-stageMode-2B5876?style=flat-square)
 ![Bluetooth](https://img.shields.io/badge/BLE-GATT%20Direct-7A1F2B?style=flat-square)
 
-<!-- TODO: Hero GIF — 演示打开应用 → 自动连接 M-Pencil → 显示电量百分比，路径 docs/images/hero.gif -->
-![Hero](docs/images/hero.gif)
+![M-Pencil 护电助手主界面 — 实时电量与充电状态](docs/images/hero.jpg)
 
 ---
 
@@ -25,8 +24,9 @@
 | 阈值提醒 + 周期重提醒 | 充到设定百分比立即通知；可选每 N 分钟重复提醒直到取下 |
 | 30 天电量历史 | 本地持久化电量样本，支持 24h / 7d / 30d 三档查看 |
 
-<!-- TODO: 三张并排截图，路径 docs/images/features.png — 1) 主页实时电量环 2) 阈值设置 3) 历史曲线 -->
-![Features](docs/images/features.png)
+| 实时电量监测 | 阈值提醒 | 灵活设置 |
+|:---:|:---:|:---:|
+| ![实时电量监测](docs/images/monitor.jpg) | ![阈值提醒](docs/images/alert.jpg) | ![灵活设置](docs/images/settings.jpg) |
 
 ## 技术架构
 
@@ -115,8 +115,7 @@ flowchart TB
 - **内容宽度封顶 + 自适应留白**：平板横屏下页面不会拉到 1600px 满宽，而是把内容钳在 960-1320px 之间，剩余空间用 `getSidePadding()` 平均留白——见 [`pages/HomePage.ets:21-24`](entry/src/main/ets/pages/HomePage.ets#L21-L24)、[`pages/SettingsPage.ets:27-30`](entry/src/main/ets/pages/SettingsPage.ets#L27-L30)。`Index.ets` 在 `aboutToAppear` 里通过 `display.getDefaultDisplaySync()` 读取屏幕物理像素并按 DPI 换算成逻辑宽度（[`pages/Index.ets:809-819`](entry/src/main/ets/pages/Index.ets#L809-L819)）。
 - **状态扁平化进 AppStorage**：所有要给 UI 看的字段（电量百分比文案、Hero 状态文本、是否可重试…）在 [`models/AppViewStorage.ets:62-85`](entry/src/main/ets/models/AppViewStorage.ets#L62-L85) 的 `syncAppViewState` 里统一计算并写入 `AppStorage`；UI 组件如 [`components/MainHeroCard.ets:6-13`](entry/src/main/ets/components/MainHeroCard.ets#L6-L13) 只通过 `@StorageLink` 单向读取，**不持有任何蓝牙/电量状态**。这样组件树不需要重渲染整个状态机，只有它订阅的具体 key 变了才更新。
 
-<!-- TODO: 横竖屏对比截图，路径 docs/images/responsive.png —— 左竖屏 / 右横屏 -->
-![Responsive](docs/images/responsive.png)
+![平板横屏布局 — 内容居中钳宽 + 自适应留白](docs/images/landscape.jpg)
 
 ---
 
