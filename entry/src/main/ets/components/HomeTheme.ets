@@ -1,0 +1,15 @@
+export const HOME_PAGE_BG = '#F5F5F0';
+export const HOME_HERO_BG = '#1A6B5A';
+export const HOME_HERO_BG_DARK = '#164E42';
+export const HOME_CARD_BG = '#FFFFFF';
+export const HOME_CARD_BORDER = '#F0EFE8';
+export const HOME_SOFT_GREEN = '#E8F5F0';
+export const HOME_SOFT_AMBER = '#FFF9E6';
+export const HOME_TEXT_PRIMARY = '#1A1A1A';
+export const HOME_TEXT_SECONDARY = '#555555';
+export const HOME_TEXT_TERTIARY = '#999999';
+export const HOME_DIVIDER = '#F0EFE8';
+export const HOME_PILL_GREEN_BG = '#DCF2EA';
+export const HOME_PILL_GREEN_FG = '#1A6B5A';
+export const HOME_PILL_RED_BG = '#FCE8E8';
+export const HOME_PILL_RED_FG = '#C23B3B';

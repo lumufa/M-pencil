@@ -1,0 +1,42 @@
+# Build output
+build/
+.build-last.err.log
+.build-last.log
+build-log.txt
+build-out.txt
+latest-build.txt
+latest-build-debug.txt
+tmp-build-full.log
+hilog.out
+
+# Hvigor / node
+.hvigor/
+node_modules/
+oh_modules/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local config
+local.properties
+
+# Claude scratch
+.claude/
+
+# Signing materials — provide your own via build-profile.local.json5 / env
+signing/
+build-profile.json5
+*.v6bak
+
+# Local dumps & debug artifacts
+*.output_dump.txt
+*.template_dump.txt
+*.v2_dump.txt
+*.template_doc.xml

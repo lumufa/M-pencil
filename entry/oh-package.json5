@@ -1,0 +1,10 @@
+{
+  "license": "Apache-2.0",
+  "devDependencies": {},
+  "author": "personal",
+  "name": "entry",
+  "description": "Entry module for M-Pencil Guardian",
+  "main": "",
+  "version": "1.0.0",
+  "dependencies": {}
+}

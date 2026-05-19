@@ -1,0 +1,43 @@
+{
+  // Copy this file to `build-profile.json5` and fill in your own signing material.
+  // The real build-profile.json5 is git-ignored to keep signing credentials out of the repo.
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "./signing/your-debug-cert.cer",
+          "storePassword": "<YOUR_STORE_PASSWORD>",
+          "keyAlias": "debugKey",
+          "keyPassword": "<YOUR_KEY_PASSWORD>",
+          "profile": "./signing/your-debug-profile.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "./signing/your-keystore.p12"
+        }
+      }
+    ],
+    "compileSdkVersion": 9,
+    "compatibleSdkVersion": 9,
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

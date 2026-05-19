@@ -1,0 +1,10 @@
+{
+  "license": "Apache-2.0",
+  "devDependencies": {},
+  "author": "personal",
+  "name": "m-pencil-guardian",
+  "description": "Native HarmonyOS NEXT reminder app for M-Pencil charge monitoring",
+  "main": "",
+  "version": "1.0.0",
+  "dependencies": {}
+}

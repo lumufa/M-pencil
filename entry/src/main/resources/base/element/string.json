@@ -1,0 +1,28 @@
+{
+  "string": [
+    {
+      "name": "app_name",
+      "value": "M-Pencil 护电提醒"
+    },
+    {
+      "name": "module_desc",
+      "value": "M-Pencil 电量监测与阈值提醒模块"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "M-Pencil 护电提醒主入口能力"
+    },
+    {
+      "name": "permission_reason_bluetooth",
+      "value": "用于扫描并连接 M-Pencil，读取实时电量。"
+    },
+    {
+      "name": "permission_reason_location",
+      "value": "HarmonyOS 的 BLE 扫描依赖位置相关权限识别附近设备。"
+    },
+    {
+      "name": "permission_reason_vibrate",
+      "value": "用于在达到提醒阈值时触发振动提醒。"
+    }
+  ]
+}
