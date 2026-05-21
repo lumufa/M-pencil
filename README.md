@@ -8,7 +8,26 @@
 ![Language](https://img.shields.io/badge/ArkTS-stageMode-2B5876?style=flat-square)
 ![Bluetooth](https://img.shields.io/badge/BLE-GATT%20Direct-7A1F2B?style=flat-square)
 
-![M-Pencil 护电助手主界面 — 实时电量与充电状态](docs/images/hero.jpg)
+<p align="center">
+  <img src="docs/images/hero.jpg" width="260" alt="M-Pencil 护电助手主界面 — 实时电量与充电状态" />
+</p>
+
+---
+
+## 目录
+
+- [它解决什么问题](#它解决什么问题)
+- [核心特性](#核心特性)
+- [立即体验](#立即体验)
+- [技术架构](#技术架构)
+- [技术亮点](#技术亮点)
+  - [1. 绕过华为 Vendor Service 的限制（核心）](#1-绕过华为-vendor-service-的限制核心)
+  - [2. 提醒策略：一次触达 vs 周期重提醒](#2-提醒策略一次触达-vs-周期重提醒)
+  - [3. 响应式布局 + 状态视图分离](#3-响应式布局--状态视图分离)
+- [项目结构](#项目结构)
+- [本地开发](#本地开发)
+- [参与贡献](#参与贡献)
+- [已知问题](#已知问题)
 
 ---
 
@@ -26,7 +45,21 @@
 
 | 实时电量监测 | 阈值提醒 | 灵活设置 |
 |:---:|:---:|:---:|
-| ![实时电量监测](docs/images/monitor.jpg) | ![阈值提醒](docs/images/alert.jpg) | ![灵活设置](docs/images/settings.jpg) |
+| <img src="docs/images/monitor.jpg" width="220" alt="实时电量监测" /> | <img src="docs/images/alert.jpg" width="220" alt="阈值提醒" /> | <img src="docs/images/settings.jpg" width="220" alt="灵活设置" /> |
+
+---
+
+## 立即体验
+
+> 当前 versionName **1.0.1**，上架/构建进度参见 [已知问题](#已知问题)。
+
+| 平台 | 当前可用方式 | 说明 |
+|---|---|---|
+| **HarmonyOS（平板 / 手机）** | 用 DevEco Studio 打开本仓库自构建 HAP | 暂未上架华为应用市场；尚未在 GitHub Releases 发布预构建 HAP，需自行用调试证书签名后安装到已配对 M-Pencil 的设备上 |
+
+> 自构建 HAP 流程见 [本地开发](#本地开发)。release 包后续会作为 GitHub Releases 资产上传——上传前还要替换 `build-profile.json5` 里的占位签名材料。
+
+---
 
 ## 技术架构
 
@@ -115,9 +148,30 @@ flowchart TB
 - **内容宽度封顶 + 自适应留白**：平板横屏下页面不会拉到 1600px 满宽，而是把内容钳在 960-1320px 之间，剩余空间用 `getSidePadding()` 平均留白——见 [`pages/HomePage.ets:21-24`](entry/src/main/ets/pages/HomePage.ets#L21-L24)、[`pages/SettingsPage.ets:27-30`](entry/src/main/ets/pages/SettingsPage.ets#L27-L30)。`Index.ets` 在 `aboutToAppear` 里通过 `display.getDefaultDisplaySync()` 读取屏幕物理像素并按 DPI 换算成逻辑宽度（[`pages/Index.ets:809-819`](entry/src/main/ets/pages/Index.ets#L809-L819)）。
 - **状态扁平化进 AppStorage**：所有要给 UI 看的字段（电量百分比文案、Hero 状态文本、是否可重试…）在 [`models/AppViewStorage.ets:62-85`](entry/src/main/ets/models/AppViewStorage.ets#L62-L85) 的 `syncAppViewState` 里统一计算并写入 `AppStorage`；UI 组件如 [`components/MainHeroCard.ets:6-13`](entry/src/main/ets/components/MainHeroCard.ets#L6-L13) 只通过 `@StorageLink` 单向读取，**不持有任何蓝牙/电量状态**。这样组件树不需要重渲染整个状态机，只有它订阅的具体 key 变了才更新。
 
-![平板横屏布局 — 内容居中钳宽 + 自适应留白](docs/images/landscape.jpg)
+<p align="center">
+  <img src="docs/images/landscape.jpg" width="520" alt="平板横屏布局 — 内容居中钳宽 + 自适应留白" />
+</p>
 
 ---
+
+## 项目结构
+
+```
+M-pencil/
+├── AppScope/                              # 应用全局 icon / 名称 / 包名
+├── entry/                                 # 单模块 HarmonyOS HAP
+│   └── src/main/
+│       ├── ets/
+│       │   ├── pages/                     # Index（编排）/ HomePage / SettingsPage
+│       │   ├── components/                # MainHeroCard / 历史图表 / 设置项
+│       │   ├── services/                  # BLE GATT 客户端 / 提醒策略 / 历史 / 权限 / 通知
+│       │   └── models/                    # AppStorage 状态扁平化 + 响应式 UI token
+│       ├── resources/                     # 字符串 / 媒体 / 主题资源
+│       └── module.json5                   # 5 项权限声明 + 设备类型限定
+├── build-profile.json5                    # 签名配置（占位，需替换为本地调试证书）
+├── build-profile.template.json5           # 配置模板（敏感字段已抽离）
+└── hvigorfile.ts                          # 构建脚本入口
+```
 
 ## 本地开发
 
@@ -132,3 +186,27 @@ hvigorw assembleHap
 或直接用 DevEco Studio 打开根目录后点击 Run。签名配置在 `build-profile.json5`，调试证书路径需要替换成自己的 `.ohos/config/auto_debug_*.cer/p7b/p12`。
 
 首次运行会请求蓝牙使用 / 蓝牙扫描 / 精确位置 / 近似位置 / 振动五项权限——这些权限的真正用途和声明位置见 [`entry/src/main/module.json5:14-65`](entry/src/main/module.json5#L14-L65) 与 [`services/PermissionService.ets:75-105`](entry/src/main/ets/services/PermissionService.ets#L75-L105)。
+
+---
+
+## 参与贡献
+
+欢迎 issue 与 PR。在动手前请注意：
+
+- **大改动先开 issue 对齐**：涉及 GATT 连接流程、提醒策略、`AppStorage` 状态契约 (`AppStatusModel` / `PenSnapshot`) 的 PR 必须先在 issue 中讨论，避免破坏现有"扫描 → 连接 → 服务发现 → 电量读取"流水线。
+- **分支命名**：`feat-<scope>` / `fix-<scope>` / `docs-<scope>` / `refactor-<scope>`，例如 `feat-quiet-hours`、`fix-gatt-reconnect`。
+- **Commit 规范**：遵循 [Conventional Commits](https://www.conventionalcommits.org/zh-hans/v1.0.0/)（`feat:` / `fix:` / `docs:` / `chore:` / `refactor:` 等前缀）。
+- **合并方式**：所有 PR 走 **Squash merge**，保持主分支线性；squash 标题沿用 PR 标题。
+- **设备依赖**：BLE 相关改动**必须在真机上跑通**——华为平板 + 已配对 M-Pencil，HarmonyOS API 9 以上。模拟器无法验证 GATT 行为，PR 描述需注明所用真机型号 & HarmonyOS 版本。
+- **签名材料**：不要把私有 `.cer` / `.p7b` / `.p12` 文件提交进 PR——`build-profile.json5` 已 gitignore，只提交 `build-profile.template.json5` 的结构变更。
+
+---
+
+## 已知问题
+
+- [ ] **未上架华为应用市场**：暂未提交 AGC 审核，端侧分发暂只支持自构建 HAP。
+- [ ] **GitHub Releases 缺 HAP 资产**：尚未在 Releases 发布预构建 release HAP，需用户自行用调试证书签名后安装；release 流程后续补。
+- [ ] **充电态需第二次读数确认**：标准 BLE Battery Service 没有"是否充电"字段，本项目按电量方向反推（[亮点 1](#1-绕过华为-vendor-service-的限制核心)），刚连上的第一次读数无法判定充放，需等下一次（5 秒后）才能给出方向。
+- [ ] **休眠 30 分钟以上无电量基线**：若息屏后 30 分钟内没有过电量样本，`resolveBaselineLevel` 的基线回退会失效，首次唤醒可能短暂误判方向。
+- [ ] **暂只支持平板 / 手机设备类型**：`module.json5` 声明的 `deviceTypes` 限定 `phone` / `tablet`，手表 / 智慧屏未适配。
+- [ ] **错误码 2900099 仅文案提示**：当系统拒绝 characteristic 操作时（典型场景：M-Pencil 配对状态异常），目前仅显示 "Battery read blocked"，未做自动重新配对引导。
