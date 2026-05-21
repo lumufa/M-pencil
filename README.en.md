@@ -8,7 +8,26 @@
 ![Language](https://img.shields.io/badge/ArkTS-stageMode-2B5876?style=flat-square)
 ![Bluetooth](https://img.shields.io/badge/BLE-GATT%20Direct-7A1F2B?style=flat-square)
 
-![M-Pencil Battery Guardian — home screen with live battery and charge state](docs/images/hero.jpg)
+<p align="center">
+  <img src="docs/images/hero.jpg" width="260" alt="M-Pencil Battery Guardian — home screen with live battery and charge state" />
+</p>
+
+---
+
+## Table of contents
+
+- [What problem it solves](#what-problem-it-solves)
+- [Key features](#key-features)
+- [Try it now](#try-it-now)
+- [Architecture](#architecture)
+- [Technical highlights](#technical-highlights)
+  - [1. Bypassing Huawei's Vendor Service (core)](#1-bypassing-huaweis-vendor-service-core)
+  - [2. Reminder policy: one-shot vs. periodic re-reminder](#2-reminder-policy-one-shot-vs-periodic-re-reminder)
+  - [3. Responsive layout + state/view separation](#3-responsive-layout--stateview-separation)
+- [Project structure](#project-structure)
+- [Local development](#local-development)
+- [Contributing](#contributing)
+- [Known issues](#known-issues)
 
 ---
 
@@ -26,7 +45,21 @@ Huawei's official battery API for the M-Pencil is wrapped inside a system-level 
 
 | Live battery monitor | Threshold alert | Flexible settings |
 |:---:|:---:|:---:|
-| ![Live battery monitor](docs/images/monitor.jpg) | ![Threshold alert](docs/images/alert.jpg) | ![Flexible settings](docs/images/settings.jpg) |
+| <img src="docs/images/monitor.jpg" width="220" alt="Live battery monitor" /> | <img src="docs/images/alert.jpg" width="220" alt="Threshold alert" /> | <img src="docs/images/settings.jpg" width="220" alt="Flexible settings" /> |
+
+---
+
+## Try it now
+
+> Current versionName is **1.0.1**; for app-store listing and build status, see [Known issues](#known-issues).
+
+| Platform | How to try it today | Notes |
+|---|---|---|
+| **HarmonyOS (tablet / phone)** | Open this repo in DevEco Studio and build the HAP yourself | Not yet listed on the Huawei AppGallery; no pre-built HAP on GitHub Releases yet — sign with your own debug certificate and install onto a device that's already paired with an M-Pencil |
+
+> Self-build flow is documented in [Local development](#local-development). A release HAP will be uploaded as a GitHub Releases asset later — before that, the placeholder signing material in `build-profile.json5` still needs to be replaced.
+
+---
 
 ## Architecture
 
@@ -115,9 +148,30 @@ A HarmonyOS app has to run on both phones and tablets — the same ArkUI code ha
 - **Capped content width + adaptive gutters**: On a landscape tablet the page does not stretch to a 1600px slab — it's clamped to between 960 and 1320px and the remaining space is split evenly via `getSidePadding()`. See [`pages/HomePage.ets:21-24`](entry/src/main/ets/pages/HomePage.ets#L21-L24) and [`pages/SettingsPage.ets:27-30`](entry/src/main/ets/pages/SettingsPage.ets#L27-L30). `Index.ets` reads the screen's physical pixels in `aboutToAppear` via `display.getDefaultDisplaySync()` and converts to logical width using the DPI ([`pages/Index.ets:809-819`](entry/src/main/ets/pages/Index.ets#L809-L819)).
 - **State flattened into AppStorage**: Every field the UI needs to render (battery percentage copy, Hero status text, whether retry is enabled, …) is computed and written into `AppStorage` from one place — `syncAppViewState` in [`models/AppViewStorage.ets:62-85`](entry/src/main/ets/models/AppViewStorage.ets#L62-L85). UI components such as [`components/MainHeroCard.ets:6-13`](entry/src/main/ets/components/MainHeroCard.ets#L6-L13) only subscribe one-way through `@StorageLink` and **hold zero Bluetooth or battery state of their own**. That way the component tree doesn't re-render off a whole state-machine update — it only re-renders the specific keys it subscribed to.
 
-![Tablet landscape layout — content clamped and centered with adaptive padding](docs/images/landscape.jpg)
+<p align="center">
+  <img src="docs/images/landscape.jpg" width="520" alt="Tablet landscape layout — content clamped and centered with adaptive padding" />
+</p>
 
 ---
+
+## Project structure
+
+```
+M-pencil/
+├── AppScope/                              # App-global icon / name / bundle id
+├── entry/                                 # Single-module HarmonyOS HAP
+│   └── src/main/
+│       ├── ets/
+│       │   ├── pages/                     # Index (orchestration) / HomePage / SettingsPage
+│       │   ├── components/                # MainHeroCard / history chart / setting rows
+│       │   ├── services/                  # BLE GATT client / reminder policy / history / permission / notifications
+│       │   └── models/                    # AppStorage state flattening + responsive UI tokens
+│       ├── resources/                     # Strings / media / theming resources
+│       └── module.json5                   # 5 permission declarations + device-type whitelist
+├── build-profile.json5                    # Signing config (placeholder — swap in your own debug certs)
+├── build-profile.template.json5           # Config template (sensitive fields stripped)
+└── hvigorfile.ts                          # Build script entry
+```
 
 ## Local development
 
@@ -132,3 +186,27 @@ hvigorw assembleHap
 Or just open the root in DevEco Studio and hit Run. The signing config lives in `build-profile.json5`; you'll need to swap the debug certificate paths to point at your own `.ohos/config/auto_debug_*.cer/p7b/p12`.
 
 On first launch the app requests five permissions — Bluetooth use / Bluetooth scan / precise location / approximate location / vibration. The actual purpose of each permission and where it's declared can be found in [`entry/src/main/module.json5:14-65`](entry/src/main/module.json5#L14-L65) and [`services/PermissionService.ets:75-105`](entry/src/main/ets/services/PermissionService.ets#L75-L105).
+
+---
+
+## Contributing
+
+Issues and PRs welcome. Before you start:
+
+- **Open an issue first for large changes**: PRs that touch the GATT connection flow, the reminder policy, or the `AppStorage` state contract (`AppStatusModel` / `PenSnapshot`) should be discussed in an issue first — avoid breaking the existing "scan → connect → service discovery → battery read" pipeline.
+- **Branch naming**: `feat-<scope>` / `fix-<scope>` / `docs-<scope>` / `refactor-<scope>`, e.g. `feat-quiet-hours`, `fix-gatt-reconnect`.
+- **Commits**: follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) (`feat:` / `fix:` / `docs:` / `chore:` / `refactor:` prefixes).
+- **Merge style**: all PRs use **Squash merge** to keep `main` linear; the squash title reuses the PR title.
+- **Hardware dependency**: any BLE-related change **must be verified on real hardware** — a Huawei tablet paired with an M-Pencil, HarmonyOS API 9 or above. Emulators cannot exercise GATT behavior; the PR description must state which real device and HarmonyOS version were used.
+- **Signing material**: do **not** commit private `.cer` / `.p7b` / `.p12` files in a PR — `build-profile.json5` is gitignored. Only commit structural changes to `build-profile.template.json5`.
+
+---
+
+## Known issues
+
+- [ ] **Not listed on Huawei AppGallery**: no AGC review submission yet; device-side distribution is currently self-build HAP only.
+- [ ] **No HAP on GitHub Releases yet**: no pre-built release HAP has been published; users must sign and build it themselves. Release flow is on the to-do list.
+- [ ] **Charging state needs a second reading to confirm**: the standard BLE Battery Service has no "is charging" field; this project infers direction from sample-over-sample delta ([Highlight 1](#1-bypassing-huaweis-vendor-service-core)). The first reading after a connect cannot distinguish charging from discharging — direction only becomes available after the next read (≈5 seconds later).
+- [ ] **Baseline goes stale after 30+ minutes idle**: if the screen has been off for 30+ minutes with no battery sample, the `resolveBaselineLevel` fallback also goes stale and the very first read after wake can briefly misjudge direction.
+- [ ] **Tablet / phone device types only**: `module.json5` whitelists `phone` and `tablet`; watch / smart-screen targets are not yet adapted.
+- [ ] **Error code 2900099 is text-only**: when the system rejects a characteristic operation (typical case: M-Pencil pairing in an unhealthy state), the app currently just shows "Battery read blocked" — there is no automatic re-pairing guidance.
